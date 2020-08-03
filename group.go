@@ -156,6 +156,10 @@ func (s *StateGroup) List(out interface{}) error {
 	return s.sts.List(out)
 }
 
+func (s *StateGroup) Delete(id interface{}) error {
+	return s.sts.Delete(id)
+}
+
 // Get gets state for a single state machine
 func (s *StateGroup) Get(id interface{}) *statestore.StoredState {
 	return s.sts.Get(id)
