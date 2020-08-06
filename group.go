@@ -99,6 +99,21 @@ func (s *StateGroup) Send(id interface{}, evt interface{}) (err error) {
 	return sm.send(Event{User: evt})
 }
 
+func (s *StateGroup) Delsta(id interface{}) (l int, err error) {
+	s.lk.Lock()
+	defer s.lk.Unlock()
+	l = len(s.sms)
+	sm, exist := s.sms[statestore.ToKey(id)]
+	if exist {
+		sm.closing <- struct{}{}
+		log.Debugf("Before delete machine len:%v\n", len(s.sms))
+		delete(s.sms, statestore.ToKey(id))
+		l = len(s.sms)
+		log.Debugf("After delete machine len:%v\n", l)
+	}
+	return
+}
+
 func (s *StateGroup) loadOrCreate(name interface{}, userState interface{}) (*StateMachine, error) {
 	s.initNotifier.Do(s.init)
 	exists, err := s.sts.Has(name)
